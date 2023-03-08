@@ -1,6 +1,6 @@
-# fly.toml file generated for theplayroom-backend on 2023-03-08T16:37:06-05:00
+# fly.toml file generated for theplayroom-backend2 on 2023-03-08T18:08:11-05:00
 
-app = "theplayroom-backend"
+app = "theplayroom-backend2"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
