@@ -131,6 +131,12 @@ router.get("/verify", MidGuard, (req, res) => {
   console.log(req.user);
   console.log("hiiiiiiiiii");
   Parent.findOne({ _id: req.user._id })
+  .populate({path: 'updates', 
+    populate: [
+        {path: 'child'},
+        {path: 'gamePlayed'}
+    ]
+})
     .then((foundParent) => {
       console.log(foundParent);
       const payload = { ...foundParent, childId: req.user._id };

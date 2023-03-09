@@ -16,7 +16,8 @@ const parentSchema = new Schema(
     childName: { type: String, lowercase: true },
     child: { type: Schema.Types.ObjectId, ref: "Child" },
     childAge: Number,
-    Relation: String,
+    relation: String,
+    updates: [{type: Schema.Types.ObjectId, ref: "Update"}]
     // posts: [{type: Schema.Types.ObjectId, ref: "Post"}]
   },
   {

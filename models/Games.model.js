@@ -6,7 +6,8 @@ const gameSchema = new Schema(
     description: String,
     original_location: String,
     cover_image: String,
-    play_link: String
+    play_link: String,
+    playable: Boolean
 
   },
   {

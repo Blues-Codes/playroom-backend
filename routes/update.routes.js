@@ -6,6 +6,31 @@ const Update = require("../models/Update.model");
 const Child = require("../models/Child.model");
 const Games = require("../models/Games.model");
 
+router.post("/create", (req, res, next) => {
+    console.log("!!!!", req.body)
+    Update.create({
+        child: req.body.child._id,
+        gamePlayed: req.body.game._id
+    })
+    .then((newUpdate) => {
+        return Parent.findOneAndUpdate(
+            {
+                childName: req.body.child.name
+            },
+            {
+                $push: {updates: newUpdate._id}
+            },
+            {new: true}
+            )
+    })
+    .then((updatedParent) => {
+        res.json(updatedParent)
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+
+  });
 router.get("/allGames", (req, res, next) => {
   Games.find().then((games) => {
     res.json(games);

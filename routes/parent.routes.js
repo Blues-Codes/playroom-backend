@@ -6,22 +6,32 @@ const Parent = require('../models/Parent.model')
 const Child = require('../models/Child.model')
 const Updates = require('../models/Update.model')
 
-/* GET users profile. */
-router.get('/profile', MidGuard, (req, res, next) => {
-    Parent.findById (req.params.parentId)
-    .then((foundParent) => {
-      res.json(foundParent);
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+// /* GET users profile. */
+// router.get('/profile', MidGuard, (req, res, next) => {
+//     Parent.findById (req.params.parentId)
+//     .then((foundParent) => {
+//       res.json(foundParent);
+//     })
+//     .catch((err) => {
+//       console.log(err)
+//     })
 
-});
-app.get('/profile', MidGuard, (req, res, next) => {
-  // retrieve the user's information from the database using their user ID
-  const Parent = getParentFromDatabase(req.user.id);
-  // send the user's information as a JSON response
-  res.json(Parent);
+// });
+router.get('/profile', MidGuard, (req, res, next) => {
+  Parent.findById(req.user._id)
+  .populate({path: 'updates', 
+  populate: [
+      {path: 'child'},
+      {path: 'gamePlayed'}
+  ]
+})
+
+  .then((foundParent) => {
+      res.json(foundParent)
+  })
+  .catch((err) => {
+      console.log(err)
+  })
 });
 
 //EDITING PARENT PROFILE
@@ -66,6 +76,26 @@ router.post('/parent/:parentId/child', MidGuard, (req, res, next) => {
     .catch((err) => {
       console.log(err)
     })
+});
+
+router.get("/delete-profile/:parentId", (req, res, next) => {
+  Parent.findByIdAndDelete(req.params.parentId)
+    .then((foundParent) => {
+      if (foundParent.profile.includes(req.params.updateId)) {
+        Update.findByIdAndDelete(req.params.UpdateId)
+          .then((deletedUpdate) => {
+            res.json(deletedUpdate);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        res.json({ message: "You can't delete this update" });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 // });

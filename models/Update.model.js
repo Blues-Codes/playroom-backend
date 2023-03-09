@@ -9,10 +9,9 @@ const updateSchema = new Schema(
     //     time: Date,
     //   },
     // ],
-    gamesPlayed: {
+    gamePlayed: {
       type: Schema.Types.ObjectId,
       ref: "Games",
-      time: Date,
     },
   },
   {

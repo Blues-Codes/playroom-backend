@@ -13,6 +13,7 @@ mongoose
         original_location: game.original_location,
         cover_image: game.cover_image,
         play_link: game.play_link,
+        playable: game.playable
       }).then((gamesCreated) => {
         console.log(gamesCreated);
       });

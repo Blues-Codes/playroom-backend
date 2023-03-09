@@ -12,124 +12,143 @@ const saltRounds = 10;
 
 const MidGuard = require("../middleware/midGuard");
 
-router.post("/signup", async (req, res, next) => {
-  if (!req.body.email || !req.body.password) {
-    return res.status(400).json({ message: "please fill out all fields" });
-  }
-  const salt = bcrypt.genSaltSync(saltRounds);
-  const hashedPass = bcrypt.hashSync(req.body.password, salt);
 
-  Parent.create({
-    password: hashedPass,
-    email: req.body.email,
-    name: req.body.name,
-    city: req.body.city,
-    childName: req.body.childName,
-    childAge: req.body.childAge,
-    relation: req.body.relation,
-  }).then((createdParent) => {
-    Child.create({
-      name: createdParent.childName,
-      age: createdParent.childAge,
-      parent: createdParent._id,
-    })
-      .then((createdChild) => {
-        const payload = {
-          _id: createdParent._id,
-          email: createdParent.email,
-          name: createdParent.name,
-          childId: createdChild._id,
-        };
-        console.log(payload);
-        const token = jwt.sign(payload, process.env.SECRET, {
-          algorithm: "HS256",
-          expiresIn: "24hr",
-        });
-        res.json({
-          token: token,
-          createdParent: createdParent,
-          message: `Welcome ${createdParent.name}`,
-        });
-      })
-      .catch((err) => {
-        res.status(201).json({ message: "Parent and child accounts created" });
-        console.log(err);
-      });
-  });
-  // res.status(201).json({ message: "Parent and child accounts created" });
-  // })
-  //     .catch ((err) => {
-  //       res.json(err.message);
-});
+router.post('/childlogin', (req, res, next) => {
+    Child.findOne({name: req.body.text})
+        .then((foundChild) => {
+            console.log(foundChild)
 
-router.post("/login", (req, res, next) => {
-  if (!req.body.email || !req.body.password) {
-    return res.status(400).json({ message: "please fill out both fields" });
-  }
+            const payload = { _id: foundChild._id, name: foundChild.name, age: foundChild.age, parent: foundChild.parent }
 
-  Parent.findOne({ email: req.body.email })
-    .then((foundParent) => {
-      if (!foundParent) {
-        return res
-          .status(401)
-          .json({ message: "Email or Password is incorrect!!!" });
-      }
+            const token = jwt.sign(payload, process.env.SECRET, {
+                algorithm: "HS256",
+                expiresIn: "24hr",
+              });
 
-      const doesMatch = bcrypt.compareSync(
-        req.body.password,
-        foundParent.password
-      );
+            res.json({token: token, child: foundChild})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+})
+// router.post("/signup", async (req, res, next) => {
+//   if (!req.body.email || !req.body.password) {
+//     return res.status(400).json({ message: "please fill out all fields" });
+//   }
+//   const salt = bcrypt.genSaltSync(saltRounds);
+//   const hashedPass = bcrypt.hashSync(req.body.password, salt);
 
-      if (doesMatch) {
-        const payload = {
-          _id: foundParent._id,
-          email: foundParent.email,
-          name: foundParent.name,
-          city: foundParent.city,
-          childName: foundParent.childName,
-          childAge: foundParent.childAge,
-          relation: foundParent.relation,
-        };
+//   Parent.create({
+//     password: hashedPass,
+//     email: req.body.email,
+//     name: req.body.name,
+//     city: req.body.city,
+//     childName: req.body.childName,
+//     childAge: req.body.childAge,
+//     relation: req.body.relation,
+//   }).then((createdParent) => {
+//     Child.create({
+//       name: createdParent.childName,
+//       age: createdParent.childAge,
+//       parent: createdParent._id,
+//     })
+//       .then((createdChild) => {
+//         const payload = {
+//           _id: createdParent._id,
+//           email: createdParent.email,
+//           name: createdParent.name,
+//           childId: createdChild._id,
+//         };
+//         console.log(payload);
+//         const token = jwt.sign(payload, process.env.SECRET, {
+//           algorithm: "HS256",
+//           expiresIn: "24hr",
+//         });
+//         res.json({
+//           token: token,
+//           createdParent: createdParent,
+//           message: `Welcome ${createdParent.name}`,
+//         });
+//       })
+//       .catch((err) => {
+//         res.status(201).json({ message: "Parent and child accounts created" });
+//         console.log(err);
+//       });
+//   });
+//   // res.status(201).json({ message: "Parent and child accounts created" });
+//   // })
+//   //     .catch ((err) => {
+//   //       res.json(err.message);
+// });
 
-        const token = jwt.sign(payload, process.env.SECRET, {
-          algorithm: "HS256",
-          expiresIn: "24hr",
-        });
-        console.log("doesmatch", payload);
-        return res.json({
-          _id: foundParent._id,
-          token: token,
-          message: `Welcome ${foundParent.name}`,
-        });
-      } else {
-        return res
-          .status(402)
-          .json({ message: "Email or Password is incorrect" });
-      }
-    })
-    .catch((err) => {
-      res.json(err.message);
-    });
-});
+// router.post("/login", (req, res, next) => {
+//   if (!req.body.email || !req.body.password) {
+//     return res.status(400).json({ message: "please fill out both fields" });
+//   }
 
-//VERIFY ALREADY CREATED USER
+//   Parent.findOne({ email: req.body.email })
+//     .then((foundParent) => {
+//       if (!foundParent) {
+//         return res
+//           .status(401)
+//           .json({ message: "Email or Password is incorrect!!!" });
+//       }
 
-router.get("/verify", MidGuard, (req, res) => {
-  // .populate('childName')
-  // .populate('gamesPlayed')
-  console.log(req.user);
-  console.log("hiiiiiiiiii");
-  Parent.findOne({ _id: req.user._id })
-    .then((foundParent) => {
-      console.log(foundParent);
-      const payload = { ...foundParent, childId: req.user._id };
-      console.log("this is the payload", payload, foundParent);
-      delete payload._doc.password;
-      res.status(200).json({ ...payload._doc, childId: req.user.childId });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+//       const doesMatch = bcrypt.compareSync(
+//         req.body.password,
+//         foundParent.password
+//       );
+
+//       if (doesMatch) {
+//         const payload = {
+//           _id: foundParent._id,
+//           email: foundParent.email,
+//           name: foundParent.name,
+//           city: foundParent.city,
+//           childName: foundParent.childName,
+//           childAge: foundParent.childAge,
+//           relation: foundParent.relation,
+//         };
+
+//         const token = jwt.sign(payload, process.env.SECRET, {
+//           algorithm: "HS256",
+//           expiresIn: "24hr",
+//         });
+//         console.log("doesmatch", payload);
+//         return res.json({
+//           _id: foundParent._id,
+//           token: token,
+//           message: `Welcome ${foundParent.name}`,
+//         });
+//       } else {
+//         return res
+//           .status(402)
+//           .json({ message: "Email or Password is incorrect" });
+//       }
+//     })
+//     .catch((err) => {
+//       res.json(err.message);
+//     });
+// });
+
+// //VERIFY ALREADY CREATED USER
+
+// router.get("/verify", MidGuard, (req, res) => {
+//   // .populate('childName')
+//   // .populate('gamesPlayed')
+//   console.log(req.user);
+//   console.log("hiiiiiiiiii");
+//   Parent.findOne({ _id: req.user._id })
+//     .then((foundParent) => {
+//       console.log(foundParent);
+//       const payload = { ...foundParent, childId: req.user._id };
+//       console.log("this is the payload", payload, foundParent);
+//       delete payload._doc.password;
+//       res.status(200).json({ ...payload._doc, childId: req.user.childId });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
 
 module.exports = router;
