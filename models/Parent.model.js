@@ -3,9 +3,9 @@ const { Schema, model } = require("mongoose");
 const parentSchema = new Schema(
   {
     email: {
-    type: String,
-    required: true,
-    unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -13,7 +13,8 @@ const parentSchema = new Schema(
     },
     name: String,
     city: String,
-    childName: { type: String, lowercase: true},
+    childName: { type: String, lowercase: true },
+    child: { type: Schema.Types.ObjectId, ref: "Child" },
     childAge: Number,
     Relation: String,
     // posts: [{type: Schema.Types.ObjectId, ref: "Post"}]

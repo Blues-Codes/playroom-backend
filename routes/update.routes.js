@@ -13,20 +13,39 @@ router.get("/allGames", (req, res, next) => {
 });
 router.post("/gameUpdate/:childName", (req, res, next) => {
   console.log(req.params.childName, req.body.gameId);
-  return Update.create({
-    child: req.params.childName,
-  }).then((createdUpdate) => {
-    console.log(createdUpdate);
-    return Games.findById(req.body.gameId).then((foundGame) => {
+  // here we need to grab the childid from the front end so that we can req.params so that when we created update it puts id of child instead of parent
+  //   if (!req.params.childName)
+  Update.findOne({ child: req.params.childName }).then((foundChild) => {
+    if (!foundChild) {
+      Update.create({
+        child: req.params.childName,
+      }).then((createdUpdate) => {
+        console.log(createdUpdate, "hi");
+        return Games.findById(req.body.gameId).then((foundGame) => {
+          console.log(foundGame);
+          return Update.findOneAndUpdate(
+            { child: req.params.childName },
+            {
+              gamesPlayed: foundGame._id,
+            },
+            { new: true }
+          ).then((updatedChild) => {
+            console.log(updatedChild);
+          });
+        });
+      });
+    }
+    Games.findById(req.body.gameId).then((foundGame) => {
       console.log(foundGame);
-      return Update.findOneAndUpdate(
+      Update.findOneAndUpdate(
         { child: req.params.childName },
         {
-          $push: { gamesPlayed: foundGame._id },
+          gamesPlayed: foundGame._id,
         },
         { new: true }
       ).then((updatedChild) => {
         console.log(updatedChild);
+        return;
       });
     });
   });

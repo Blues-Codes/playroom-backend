@@ -2,14 +2,18 @@ const { Schema, model } = require("mongoose");
 
 const updateSchema = new Schema(
   {
-    child: {type: Schema.Types.ObjectId, ref: "Child"},
-    gamesPlayed: [
-        {
-            game: {type: Schema.Types.ObjectId}, 
-            time: Date
-        }
-    ],
-        
+    child: { type: Schema.Types.ObjectId, ref: "Child" },
+    // gamesPlayed: [
+    //   {
+    //     game: { type: Schema.Types.ObjectId },
+    //     time: Date,
+    //   },
+    // ],
+    gamesPlayed: {
+      type: Schema.Types.ObjectId,
+      ref: "Games",
+      time: Date,
+    },
   },
   {
     timeseries: true,
@@ -20,8 +24,6 @@ const updateSchema = new Schema(
 const Update = model("Update", updateSchema);
 
 module.exports = Update;
-
-
 
 // // parent getting updates
 

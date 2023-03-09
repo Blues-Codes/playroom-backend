@@ -38,6 +38,7 @@ router.post("/signup", async (req, res, next) => {
           _id: createdParent._id,
           email: createdParent.email,
           name: createdParent.name,
+          childId: createdChild._id,
         };
         console.log(payload);
         const token = jwt.sign(payload, process.env.SECRET, {
@@ -111,20 +112,31 @@ router.post("/login", (req, res, next) => {
     });
 });
 
+router.post("/logout", (req, res, next) => {
+  // clear user session
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session: ", err);
+    }
+    // redirect to login page after logout
+    res.redirect("/");
+  });
+});
+
 //VERIFY ALREADY CREATED USER
 
 router.get("/verify", MidGuard, (req, res) => {
   // .populate('childName')
   // .populate('gamesPlayed')
   console.log(req.user);
-  console.log("hi");
-  Parent.findOne({ id: req.user.id })
+  console.log("hiiiiiiiiii");
+  Parent.findOne({ _id: req.user._id })
     .then((foundParent) => {
       console.log(foundParent);
-      const payload = { ...foundParent };
+      const payload = { ...foundParent, childId: req.user._id };
       console.log("this is the payload", payload, foundParent);
       delete payload._doc.password;
-      res.status(200).json(payload._doc);
+      res.status(200).json({ ...payload._doc, childId: req.user.childId });
     })
     .catch((err) => {
       console.log(err);

@@ -27,9 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
   //   })
   // );
   app.use(
-    cors({
-      origin: [process.env.FRONTEND_URI]  // <== URL of our future React app
-    })
+    cors()
   );
 
 
