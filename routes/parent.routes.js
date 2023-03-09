@@ -17,6 +17,12 @@ router.get('/profile', MidGuard, (req, res, next) => {
     })
 
 });
+app.get('/profile', MidGuard, (req, res, next) => {
+  // retrieve the user's information from the database using their user ID
+  const Parent = getParentFromDatabase(req.user.id);
+  // send the user's information as a JSON response
+  res.json(Parent);
+});
 
 //EDITING PARENT PROFILE
 router.post('/parent/:parentId/profile', MidGuard, (req, res, next) => {
