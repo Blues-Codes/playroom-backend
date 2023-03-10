@@ -78,23 +78,18 @@ router.post('/parent/:parentId/child', MidGuard, (req, res, next) => {
     })
 });
 
-router.get("/delete-profile/:parentId", (req, res, next) => {
-  Parent.findByIdAndDelete(req.params.parentId)
-    .then((foundParent) => {
-      if (foundParent.profile.includes(req.params.updateId)) {
-        Update.findByIdAndDelete(req.params.UpdateId)
-          .then((deletedUpdate) => {
-            res.json(deletedUpdate);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+router.get("/delete-profile/:id", (req, res, next) => {
+  Parent.findOneAndDelete({ _id: req.params.id })
+    .then((deletedParent) => {
+      if (deletedParent) {
+        res.json({ message: "Profile deleted successfully" });
       } else {
-        res.json({ message: "You can't delete this update" });
+        res.json({ message: "Profile not found" });
       }
     })
     .catch((err) => {
       console.log(err);
+      res.json({ message: "Error deleting profile" });
     });
 });
 

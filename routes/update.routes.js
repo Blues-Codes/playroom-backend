@@ -88,25 +88,25 @@ router.get("/childupdates", (req, res, next) => {
     });
 });
 
-router.get("/delete-update/:updateId/:parentId", (req, res, next) => {
-  Parent.findById(req.params.parentId)
-    .then((foundParent) => {
-      if (foundParent.updates.includes(req.params.updateId)) {
-        Update.findByIdAndDelete(req.params.UpdateId)
-          .then((deletedUpdate) => {
-            res.json(deletedUpdate);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        res.json({ message: "You can't delete this update" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+// router.get("/delete-update/:updateId/:parentId", (req, res, next) => {
+//   Parent.findById(req.params.parentId)
+//     .then((foundParent) => {
+//       if (foundParent.updates.includes(req.params.updateId)) {
+//         Update.findByIdAndDelete(req.params.UpdateId)
+//           .then((deletedUpdate) => {
+//             res.json(deletedUpdate);
+//           })
+//           .catch((err) => {
+//             console.log(err);
+//           });
+//       } else {
+//         res.json({ message: "You can't delete this update" });
+//       }
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
 
 // router.get('/post-detail/:id', (req, res, next) => {
 //   Post.findOne({_id: req.params.id})
