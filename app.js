@@ -26,9 +26,15 @@ app.use(express.static(path.join(__dirname, 'public')));
   //     origin: [process.env.FRONTEND_URI]  // <== URL of our future React app
   //   })
   // );
+  // app.use(
+  //   cors()
+  // );
   app.use(
-    cors()
-  );
+    cors({
+      origin: process.env.FRONTEND_URI,
+      credentials: true,  // <== URL of our future React app
+    })
+ );
 
 
 app.use('/parent', parentRouter);

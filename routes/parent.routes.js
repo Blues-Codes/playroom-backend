@@ -35,11 +35,13 @@ router.get('/profile', MidGuard, (req, res, next) => {
 });
 
 //EDITING PARENT PROFILE
-router.post('/parent/:parentId/profile', MidGuard, (req, res, next) => {
+router.post('/:parentId/profile', MidGuard, (req, res, next) => {
   console.log(req.parent)
   Parent.findByIdAndUpdate(req.params.parentId, {
     name:req.body.name,
     city: req.body.city,
+    email: req.body.email,
+    password: req.body.password
   },{new:true})
     .then((updatedParent) =>{
       res.json(updatedParent)

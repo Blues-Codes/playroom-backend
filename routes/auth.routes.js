@@ -12,7 +12,7 @@ const saltRounds = 10;
 
 const MidGuard = require("../middleware/midGuard");
 
-router.post("/signup", async (req, res, next) => {
+router.post("/signup", (req, res, next) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).json({ message: "please fill out all fields" });
   }
